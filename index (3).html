@@ -1,0 +1,966 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pattes</title>
+<link rel="icon" id="fav" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%237c5cff'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0e1025;--ink:#f3f0ff;--muted:#a7a4c8;--line:rgba(255,255,255,.13);--glass:rgba(255,255,255,.07);--a:#ff7a59;--b:#7c5cff;--ok:#4ade80;--warn:#fbbf24;--bad:#ff4d6d;--r:18px}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:'Nunito',system-ui,-apple-system,Segoe UI,sans-serif;background:var(--bg);color:var(--ink);overflow:hidden;-webkit-font-smoothing:antialiased}
+button,input{font:inherit;color:inherit}
+button{cursor:pointer;border:0;background:none}
+.hidden{display:none!important}
+svg{display:block}
+
+/* ---------- fond animé ---------- */
+.bg{position:fixed;inset:0;overflow:hidden;z-index:0;pointer-events:none}
+.blob{position:absolute;border-radius:50%;filter:blur(70px);opacity:.55;animation:drift 18s ease-in-out infinite}
+.b1{width:46vmax;height:46vmax;background:#5b3df5;left:-12vmax;top:-14vmax}
+.b2{width:40vmax;height:40vmax;background:#ff6a4d;right:-14vmax;bottom:-12vmax;animation-delay:-6s;animation-duration:22s}
+.b3{width:30vmax;height:30vmax;background:#12b5a6;left:35%;top:40%;opacity:.26;animation-delay:-12s}
+@keyframes drift{0%,100%{transform:translate(0,0) scale(1)}33%{transform:translate(6vmax,4vmax) scale(1.12)}66%{transform:translate(-4vmax,7vmax) scale(.92)}}
+.spark{position:absolute;width:4px;height:4px;border-radius:50%;background:#fff;opacity:0;animation:twinkle var(--d) ease-in-out infinite;animation-delay:var(--dl)}
+@keyframes twinkle{0%,100%{opacity:0;transform:translateY(0) scale(.5)}50%{opacity:.75;transform:translateY(-16px) scale(1)}}
+
+/* ---------- écran de connexion ---------- */
+#auth{position:fixed;inset:0;z-index:2;display:grid;place-items:center;padding:20px;overflow:auto}
+.card{width:min(420px,100%);padding:34px 30px 30px;border-radius:28px;background:var(--glass);border:1px solid var(--line);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);box-shadow:0 30px 80px rgba(0,0,0,.45);animation:rise .9s cubic-bezier(.2,.9,.2,1) both}
+@keyframes rise{from{opacity:0;transform:translateY(40px) scale(.96)}to{opacity:1;transform:none}}
+.logo{width:92px;height:92px;margin:0 auto 14px;animation:floaty 4s ease-in-out infinite}
+@keyframes floaty{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-10px) rotate(3deg)}}
+.logo .toe{transform-box:fill-box;transform-origin:center;animation:popin .6s cubic-bezier(.3,1.6,.5,1) both;animation-delay:calc(.35s + var(--i)*.12s)}
+.logo .pad{transform-box:fill-box;transform-origin:center;animation:popin .6s cubic-bezier(.3,1.6,.5,1) .2s both}
+@keyframes popin{from{transform:scale(0)}to{transform:scale(1)}}
+h1.brand{text-align:center;font-weight:900;font-size:34px;letter-spacing:.5px;background:linear-gradient(90deg,#ffb199,#c3b4ff,#ff7a59,#c3b4ff);background-size:300% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:shine 6s linear infinite}
+@keyframes shine{to{background-position:300% 0}}
+.tagline{text-align:center;color:var(--muted);margin:4px 0 22px;font-weight:600}
+.tabs2{position:relative;display:grid;grid-template-columns:1fr 1fr;background:rgba(0,0,0,.25);border-radius:14px;padding:4px;margin-bottom:18px}
+.tabs2 i{position:absolute;top:4px;bottom:4px;left:4px;width:calc(50% - 4px);border-radius:11px;background:linear-gradient(135deg,var(--b),var(--a));transition:transform .45s cubic-bezier(.3,1.4,.5,1)}
+.tabs2.reg i{transform:translateX(100%)}
+.tabs2 button{position:relative;padding:10px;font-weight:800;color:#fff;opacity:.75;transition:opacity .3s}
+.tabs2 button.on{opacity:1}
+.field{display:block;margin-bottom:12px}
+.field span{display:block;font-size:13px;font-weight:700;color:var(--muted);margin-bottom:5px}
+.field input{width:100%;padding:13px 15px;border-radius:14px;background:rgba(0,0,0,.28);border:1.5px solid var(--line);outline:0;transition:border-color .25s,box-shadow .25s,transform .25s}
+.field input:focus{border-color:#a592ff;box-shadow:0 0 0 4px rgba(124,92,255,.25);transform:translateY(-1px)}
+.btn{position:relative;overflow:hidden;width:100%;padding:14px;border-radius:14px;font-weight:900;font-size:16px;background:linear-gradient(120deg,var(--b),var(--a),var(--b));background-size:200% 100%;transition:transform .2s,box-shadow .3s,background-position .6s;box-shadow:0 10px 30px rgba(124,92,255,.35)}
+.btn:hover{transform:translateY(-2px);background-position:100% 0}
+.btn:active{transform:scale(.97)}
+.btn:disabled{opacity:.6;pointer-events:none}
+.btn::after{content:"";position:absolute;top:0;left:-60%;width:40%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.35),transparent);transform:skewX(-20deg);animation:sweep 3.2s ease-in-out infinite}
+@keyframes sweep{0%,60%{left:-60%}100%{left:130%}}
+.btn.ghost{background:var(--glass);border:1px solid var(--line);box-shadow:none}
+.btn.ghost::after{display:none}
+.err{min-height:20px;margin-top:10px;text-align:center;color:#ff9fb3;font-weight:700;font-size:14px}
+.shake{animation:shake .45s}
+@keyframes shake{20%{transform:translateX(-9px)}40%{transform:translateX(8px)}60%{transform:translateX(-5px)}80%{transform:translateX(3px)}}
+
+/* ---------- application ---------- */
+#app{position:fixed;inset:0;z-index:2;display:flex;flex-direction:column;animation:fadein .6s both}
+@keyframes fadein{from{opacity:0}to{opacity:1}}
+header.top{height:66px;flex:none;display:flex;align-items:center;gap:14px;padding:0 18px;border-bottom:1px solid var(--line);background:rgba(14,16,37,.55);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);position:relative;z-index:5}
+.mini{display:flex;align-items:center;gap:10px;font-weight:900;font-size:21px}
+.mini svg{width:34px;height:34px;transition:transform .5s cubic-bezier(.3,1.6,.5,1)}
+.mini:hover svg{transform:rotate(-14deg) scale(1.15)}
+.tabs{position:relative;display:flex;gap:4px;margin:0 auto;padding:4px;background:rgba(0,0,0,.28);border-radius:16px}
+.tabs i{position:absolute;top:4px;bottom:4px;left:4px;width:calc(50% - 4px);border-radius:12px;background:linear-gradient(135deg,var(--b),var(--a));transition:transform .5s cubic-bezier(.3,1.4,.5,1)}
+.tabs.pet i{transform:translateX(100%)}
+.tabs button{position:relative;display:flex;align-items:center;gap:8px;padding:9px 22px;font-weight:800;border-radius:12px;opacity:.7;transition:opacity .3s}
+.tabs button.on{opacity:1}
+.tabs svg{width:20px;height:20px}
+.dot{min-width:20px;height:20px;padding:0 6px;border-radius:10px;background:#ff2d55;color:#fff;font-size:12px;font-weight:900;display:inline-grid;place-items:center;box-shadow:0 0 0 2px rgba(14,16,37,.9)}
+.dot.pop{animation:badgepop .55s cubic-bezier(.3,1.8,.5,1)}
+@keyframes badgepop{0%{transform:scale(.2)}60%{transform:scale(1.35)}100%{transform:scale(1)}}
+.hright{display:flex;align-items:center;gap:8px}
+.ibtn{position:relative;width:42px;height:42px;display:grid;place-items:center;border-radius:13px;background:var(--glass);border:1px solid var(--line);transition:transform .25s,background .25s}
+.ibtn:hover{transform:translateY(-2px);background:rgba(255,255,255,.14)}
+.ibtn svg{width:21px;height:21px}
+.ibtn .dot{position:absolute;top:-7px;right:-7px}
+.bell.ring svg{animation:ring 1s ease-in-out}
+@keyframes ring{0%,100%{transform:rotate(0)}15%{transform:rotate(18deg)}30%{transform:rotate(-16deg)}45%{transform:rotate(12deg)}60%{transform:rotate(-8deg)}75%{transform:rotate(4deg)}}
+.me{font-weight:800;color:var(--muted);padding:0 6px}
+main{flex:1;min-height:0;position:relative}
+.view{position:absolute;inset:0;display:none}
+.view.on{display:block;animation:viewin .55s cubic-bezier(.2,.9,.2,1) both}
+@keyframes viewin{from{opacity:0;transform:translateY(18px) scale(.985)}to{opacity:1;transform:none}}
+
+/* notifications panel */
+#bellPanel{position:absolute;top:62px;right:14px;width:min(360px,calc(100% - 28px));max-height:70vh;overflow:auto;border-radius:20px;background:rgba(24,26,56,.96);border:1px solid var(--line);box-shadow:0 24px 60px rgba(0,0,0,.5);padding:12px;z-index:20;transform-origin:top right;animation:panel .35s cubic-bezier(.3,1.4,.5,1) both}
+@keyframes panel{from{opacity:0;transform:scale(.8) translateY(-10px)}to{opacity:1;transform:none}}
+.nitem{display:flex;gap:12px;align-items:center;width:100%;text-align:left;padding:11px 12px;border-radius:14px;transition:background .2s,transform .2s;animation:slidein .4s both;animation-delay:calc(var(--i)*60ms)}
+.nitem:hover{background:rgba(255,255,255,.09);transform:translateX(3px)}
+.nitem b{display:block;font-weight:800}
+.nitem small{color:var(--muted);font-weight:600;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:210px}
+.nempty{padding:26px 10px;text-align:center;color:var(--muted);font-weight:700}
+.nall{margin-top:8px;padding:10px;border-radius:12px;width:100%;font-weight:800;background:var(--glass);transition:background .2s}
+.nall:hover{background:rgba(255,255,255,.15)}
+@keyframes slidein{from{opacity:0;transform:translateX(-16px)}to{opacity:1;transform:none}}
+
+/* ---------- messagerie ---------- */
+.msgs{display:grid;grid-template-columns:340px 1fr;height:100%}
+.side{display:flex;flex-direction:column;min-height:0;border-right:1px solid var(--line);background:rgba(255,255,255,.03)}
+.newchat{display:flex;gap:8px;padding:14px}
+.newchat input{flex:1;min-width:0;padding:12px 14px;border-radius:14px;background:rgba(0,0,0,.28);border:1.5px solid var(--line);outline:0;transition:border-color .25s,box-shadow .25s}
+.newchat input:focus{border-color:#a592ff;box-shadow:0 0 0 4px rgba(124,92,255,.22)}
+.newchat button{width:46px;border-radius:14px;background:linear-gradient(135deg,var(--b),var(--a));display:grid;place-items:center;transition:transform .3s cubic-bezier(.3,1.6,.5,1)}
+.newchat button:hover{transform:rotate(90deg) scale(1.08)}
+.newchat svg{width:22px;height:22px}
+#convList{flex:1;overflow:auto;padding:0 10px 14px}
+.conv{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:11px 12px;border-radius:16px;margin-bottom:4px;transition:background .25s,transform .25s}
+.conv.anim{animation:slidein .5s both;animation-delay:calc(var(--i)*70ms)}
+.conv:hover{background:rgba(255,255,255,.08);transform:translateX(4px)}
+.conv.on{background:linear-gradient(135deg,rgba(124,92,255,.35),rgba(255,122,89,.22))}
+.av{flex:none;width:46px;height:46px;border-radius:50%;display:grid;place-items:center;font-weight:900;font-size:19px;color:#fff;text-transform:uppercase;box-shadow:inset 0 -6px 12px rgba(0,0,0,.18)}
+.cmeta{flex:1;min-width:0}
+.cmeta b{display:block;font-weight:800}
+.cmeta small{display:block;color:var(--muted);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.conv .dot{flex:none}
+.empty{display:grid;place-items:center;text-align:center;color:var(--muted);font-weight:700;padding:30px;height:100%}
+.empty svg{width:110px;height:110px;margin:0 auto 12px;animation:floaty 4s ease-in-out infinite}
+.chat{display:flex;flex-direction:column;min-height:0;min-width:0}
+.chead{flex:none;display:flex;align-items:center;gap:12px;padding:12px 18px;border-bottom:1px solid var(--line);animation:fadein .4s both}
+.chead b{font-size:18px;font-weight:900}
+.back{display:none}
+#msgArea{flex:1;overflow:auto;padding:18px;display:flex;flex-direction:column;gap:7px;scroll-behavior:smooth}
+.bub{max-width:min(520px,80%);padding:10px 14px 7px;border-radius:20px;line-height:1.4;word-wrap:break-word;overflow-wrap:anywhere;white-space:pre-wrap;animation:bubin .45s cubic-bezier(.3,1.5,.5,1) both}
+.bub small{display:block;font-size:11px;opacity:.65;font-weight:700;margin-top:2px;text-align:right;white-space:normal}
+.bub.mine{align-self:flex-end;border-bottom-right-radius:6px;background:linear-gradient(135deg,var(--b),#a05cff);transform-origin:bottom right}
+.bub.theirs{align-self:flex-start;border-bottom-left-radius:6px;background:rgba(255,255,255,.12);transform-origin:bottom left}
+@keyframes bubin{from{opacity:0;transform:scale(.4) translateY(14px)}to{opacity:1;transform:none}}
+.composer{flex:none;display:flex;gap:10px;padding:12px 16px 16px;border-top:1px solid var(--line)}
+.composer input{flex:1;min-width:0;padding:14px 18px;border-radius:999px;background:rgba(0,0,0,.28);border:1.5px solid var(--line);outline:0;transition:border-color .25s,box-shadow .25s}
+.composer input:focus{border-color:#a592ff;box-shadow:0 0 0 4px rgba(124,92,255,.22)}
+.send{width:50px;height:50px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,var(--b),var(--a));transition:transform .25s cubic-bezier(.3,1.6,.5,1)}
+.send:hover{transform:scale(1.1) rotate(-8deg)}
+.send:active{transform:scale(.9)}
+.send.fly svg{animation:fly .5s ease-in}
+@keyframes fly{40%{transform:translate(8px,-8px) scale(.8);opacity:.2}41%{transform:translate(-8px,8px)}100%{transform:none;opacity:1}}
+.send svg{width:22px;height:22px}
+
+/* ---------- animal ---------- */
+.petview{overflow:auto;padding:22px}
+.wrap{max-width:1000px;margin:0 auto}
+.stage{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:22px;align-items:start}
+.room{position:relative;height:410px;border-radius:30px;overflow:hidden;border:1px solid var(--line);box-shadow:0 24px 60px rgba(0,0,0,.4)}
+.room.day{background:linear-gradient(#7cc4ff,#cfeaff 62%)}
+.room.night{background:linear-gradient(#0b1030,#2a2468 68%)}
+.floor{position:absolute;left:0;right:0;bottom:0;height:30%;background:linear-gradient(#7bbf72,#5aa05a)}
+.room.night .floor{background:linear-gradient(#2b5a52,#1d3f3c)}
+.floor::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent 0 46px,rgba(255,255,255,.07) 46px 48px)}
+.sun{position:absolute;top:34px;left:60px;width:70px;height:70px;border-radius:50%;background:#ffe27a;box-shadow:0 0 0 14px rgba(255,226,122,.3),0 0 60px 30px rgba(255,226,122,.45);animation:sunpulse 5s ease-in-out infinite}
+.room.night .sun{background:#f1f3ff;box-shadow:0 0 0 12px rgba(241,243,255,.12),0 0 50px 18px rgba(200,210,255,.35)}
+@keyframes sunpulse{0%,100%{transform:scale(1) translateY(0)}50%{transform:scale(1.08) translateY(-6px)}}
+.cloud{position:absolute;height:28px;width:96px;border-radius:30px;background:#fff;opacity:.9;animation:cloud linear infinite}
+.cloud::before,.cloud::after{content:"";position:absolute;background:#fff;border-radius:50%}
+.cloud::before{width:44px;height:44px;left:12px;top:-20px}
+.cloud::after{width:32px;height:32px;left:50px;top:-12px}
+.room.night .cloud{opacity:.12}
+@keyframes cloud{from{transform:translateX(-140px)}to{transform:translateX(640px)}}
+.star{position:absolute;width:3px;height:3px;border-radius:50%;background:#fff;opacity:0;animation:twink 3s ease-in-out infinite}
+.room.day .star{display:none}
+@keyframes twink{50%{opacity:1}}
+.petwrap{position:absolute;left:50%;bottom:18px;width:250px;margin-left:-125px}
+.pet svg{width:100%;height:auto;overflow:visible}
+.pet.dead{filter:grayscale(1) opacity(.82)}
+.pet .bob{animation:bob 2.4s ease-in-out infinite;transform-origin:100px 186px}
+@keyframes bob{0%,100%{transform:scale(1,1)}50%{transform:scale(1.015,1.045)}}
+.pet .tail{transform-origin:140px 155px;animation:wag 1.1s ease-in-out infinite}
+@keyframes wag{0%,100%{transform:rotate(-10deg)}50%{transform:rotate(15deg)}}
+.pet .head{transform-origin:100px 125px;animation:tilt 5s ease-in-out infinite}
+@keyframes tilt{0%,100%{transform:rotate(0)}30%{transform:rotate(-3.5deg)}70%{transform:rotate(3.5deg)}}
+.pet .eyes{transform-box:fill-box;transform-origin:center;animation:blink 4.5s infinite}
+@keyframes blink{0%,93%,100%{transform:scaleY(1)}96%{transform:scaleY(.08)}}
+.pet .ear{transform-box:fill-box;transform-origin:50% 90%;animation:twitch 6s infinite}
+@keyframes twitch{0%,88%,100%{transform:rotate(0)}91%{transform:rotate(-9deg)}95%{transform:rotate(6deg)}}
+.pet .shadow{transform-box:fill-box;transform-origin:center;animation:shad 2.4s ease-in-out infinite}
+@keyframes shad{0%,100%{transform:scaleX(1)}50%{transform:scaleX(.94)}}
+.pet .tear{animation:tear 2.2s ease-in infinite}
+@keyframes tear{0%{transform:translateY(-4px);opacity:0}30%{opacity:1}100%{transform:translateY(22px);opacity:0}}
+.mood-hungry .tail,.mood-sad .tail{animation-duration:3.2s}
+.mood-hungry .bob{animation:shiver .3s linear infinite}
+@keyframes shiver{0%,100%{transform:translateX(0)}25%{transform:translateX(-1.5px)}75%{transform:translateX(1.5px)}}
+.pet.eating .head{animation:nod .32s ease-in-out 5}
+@keyframes nod{0%,100%{transform:rotate(0) translateY(0)}50%{transform:rotate(7deg) translateY(10px)}}
+.pet.playing{animation:jump .62s cubic-bezier(.3,.7,.4,1) 4}
+@keyframes jump{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-70px) rotate(8deg)}}
+.pet.dead .bob{animation:ghost 3s ease-in-out infinite}
+@keyframes ghost{0%,100%{transform:translateY(-6px)}50%{transform:translateY(-22px)}}
+.halo{animation:halo 3s ease-in-out infinite}
+@keyframes halo{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.fx{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.heart{position:absolute;bottom:130px;width:26px;height:26px;fill:#ff4d6d;animation:rise2 1.8s ease-out forwards}
+@keyframes rise2{0%{transform:translateY(0) scale(.3);opacity:0}15%{opacity:1}100%{transform:translateY(-190px) scale(1.2) rotate(var(--r));opacity:0}}
+.kib{position:absolute;top:-20px;width:14px;height:14px;border-radius:50%;background:#b5713d;box-shadow:inset -3px -3px 0 rgba(0,0,0,.2);animation:fall 1s ease-in forwards}
+@keyframes fall{to{transform:translateY(300px) rotate(300deg);opacity:.2}}
+.ball{position:absolute;bottom:50px;left:-40px;width:42px;height:42px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#ffd1c7,#ff4d6d 55%,#b8002f);animation:ballroll 2.6s ease-in-out forwards}
+@keyframes ballroll{0%{left:-40px;bottom:50px}20%{bottom:130px}35%{bottom:50px;left:25%}55%{bottom:120px}70%{bottom:50px;left:70%}85%{bottom:80px}100%{left:110%;bottom:50px}}
+.conf{position:fixed;top:-14px;width:10px;height:16px;z-index:50;pointer-events:none;animation:conf var(--t) linear forwards}
+@keyframes conf{to{transform:translateY(112vh) rotate(var(--rot))}}
+.panel{border-radius:26px;background:var(--glass);border:1px solid var(--line);padding:22px;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+.namebar{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:6px}
+.namebar h2{font-size:30px;font-weight:900}
+.tag{font-weight:800;font-size:13px;padding:4px 10px;border-radius:999px;background:rgba(255,255,255,.12);letter-spacing:.5px}
+.sub{color:var(--muted);font-weight:700;margin-bottom:16px}
+.need{margin:14px 0}
+.need .row{display:flex;justify-content:space-between;font-weight:800;margin-bottom:6px}
+.need .row small{color:var(--muted);font-weight:700}
+.bar{height:16px;border-radius:999px;background:rgba(0,0,0,.32);overflow:hidden;position:relative}
+.bar i{display:block;height:100%;border-radius:999px;transition:width 1s cubic-bezier(.3,1,.4,1),background .5s;position:relative}
+.bar i::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.4),transparent);transform:translateX(-100%);animation:bshine 2.6s ease-in-out infinite}
+@keyframes bshine{to{transform:translateX(100%)}}
+.bar.low i{animation:lowpulse .9s ease-in-out infinite}
+@keyframes lowpulse{50%{opacity:.55}}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:18px}
+.actions .wide{grid-column:1/-1}
+.act{display:flex;align-items:center;justify-content:center;gap:9px;padding:14px;border-radius:16px;font-weight:900;background:linear-gradient(135deg,var(--b),var(--a));transition:transform .25s cubic-bezier(.3,1.6,.5,1),box-shadow .3s;box-shadow:0 8px 24px rgba(124,92,255,.3)}
+.act:hover{transform:translateY(-3px) scale(1.03)}
+.act:active{transform:scale(.94)}
+.act:disabled{opacity:.55;pointer-events:none}
+.act.alt{background:var(--glass);border:1px solid var(--line);box-shadow:none}
+.act svg{width:22px;height:22px}
+.hint{margin-top:14px;font-size:13px;color:var(--muted);font-weight:700;line-height:1.45}
+.grave{text-align:center;max-width:520px;margin:30px auto;padding:30px}
+.grave .pet{width:210px;margin:0 auto 12px}
+.grave h2{font-size:28px;font-weight:900;margin-bottom:8px}
+.grave p{color:var(--muted);font-weight:700;margin-bottom:20px}
+
+/* adoption */
+.wiz{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:22px;align-items:start}
+.preview{position:relative;border-radius:30px;border:1px solid var(--line);background:radial-gradient(circle at 50% 30%,rgba(255,255,255,.15),rgba(255,255,255,.03));padding:30px 40px 14px;overflow:hidden}
+.preview .pet{animation:pvin .5s cubic-bezier(.3,1.6,.5,1)}
+@keyframes pvin{from{transform:scale(.7) rotate(-6deg)}to{transform:none}}
+.wiz h3{font-size:14px;color:var(--muted);font-weight:800;text-transform:uppercase;letter-spacing:1px;margin:18px 0 9px}
+.wiz h3:first-child{margin-top:0}
+.sp{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.spc{padding:6px 4px 9px;border-radius:16px;background:var(--glass);border:2px solid transparent;font-weight:800;font-size:13px;transition:transform .25s cubic-bezier(.3,1.6,.5,1),border-color .25s,background .25s}
+.spc:hover{transform:translateY(-4px)}
+.spc.on{border-color:#a592ff;background:rgba(124,92,255,.22);transform:translateY(-4px) scale(1.04)}
+.spc .pet svg{width:100%}
+.spc .pet *{animation:none!important}
+.sw{display:flex;flex-wrap:wrap;gap:10px}
+.sw button{width:36px;height:36px;border-radius:50%;border:3px solid transparent;box-shadow:inset 0 -5px 8px rgba(0,0,0,.2);transition:transform .25s cubic-bezier(.3,1.6,.5,1),border-color .2s}
+.sw button:hover{transform:scale(1.18)}
+.sw button.on{border-color:#fff;transform:scale(1.18)}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{padding:9px 15px;border-radius:999px;font-weight:800;background:var(--glass);border:1.5px solid var(--line);transition:transform .25s cubic-bezier(.3,1.6,.5,1),background .25s}
+.chip:hover{transform:translateY(-2px)}
+.chip.on{background:linear-gradient(135deg,var(--b),var(--a));border-color:transparent}
+.wiz .field{margin-top:4px}
+.wiz .btn{margin-top:18px}
+
+/* modale */
+.modal{position:fixed;inset:0;z-index:40;display:grid;place-items:center;padding:16px;background:rgba(6,7,20,.65);backdrop-filter:blur(6px);animation:fadein .25s both}
+.mbox{width:min(780px,100%);max-height:92vh;overflow:auto;border-radius:28px;background:#171a3c;border:1px solid var(--line);padding:24px;animation:panel .4s cubic-bezier(.3,1.4,.5,1) both}
+.mbox .top2{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.mbox .top2 h2{font-weight:900}
+
+/* toasts */
+#toasts{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);z-index:60;display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none}
+.toast{padding:12px 20px;border-radius:999px;background:#272b5c;border:1px solid var(--line);font-weight:800;box-shadow:0 12px 30px rgba(0,0,0,.4);animation:toast .45s cubic-bezier(.3,1.6,.5,1) both}
+.toast.out{animation:toastout .3s forwards}
+@keyframes toast{from{opacity:0;transform:translateY(24px) scale(.8)}to{opacity:1;transform:none}}
+@keyframes toastout{to{opacity:0;transform:translateY(10px) scale(.9)}}
+
+::-webkit-scrollbar{width:8px}
+::-webkit-scrollbar-thumb{background:rgba(255,255,255,.18);border-radius:8px}
+
+@media (max-width:860px){
+  .stage,.wiz{grid-template-columns:1fr}
+  .room{height:340px}
+}
+@media (max-width:720px){
+  header.top{height:58px;padding:0 12px}
+  .mini span,.me{display:none}
+  .tabs{position:fixed;left:50%;bottom:12px;transform:translateX(-50%);margin:0;z-index:30;box-shadow:0 14px 40px rgba(0,0,0,.55);background:#1c1f46}
+  .tabs button{padding:11px 22px}
+  main{padding-bottom:0}
+  .msgs{grid-template-columns:1fr}
+  .msgs .chat{display:none}
+  .msgs.chat-open .side{display:none}
+  .msgs.chat-open .chat{display:flex}
+  .back{display:grid}
+  .petview{padding:14px 14px 90px}
+  #msgArea{padding-bottom:18px}
+  .composer{padding-bottom:78px}
+  #convList{padding-bottom:84px}
+  #bellPanel{top:56px}
+}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute"><defs>
+  <linearGradient id="lg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7c5cff"/><stop offset="1" stop-color="#ff7a59"/></linearGradient>
+</defs></svg>
+
+<div class="bg"><i class="blob b1"></i><i class="blob b2"></i><i class="blob b3"></i><div id="sparks"></div></div>
+
+<!-- ============ CONNEXION ============ -->
+<section id="auth">
+  <div class="card" id="authCard">
+    <div class="logo" id="bigLogo"></div>
+    <h1 class="brand">Pattes</h1>
+    <p class="tagline">Discute. Adopte. Prends soin.</p>
+    <div class="tabs2" id="authTabs"><i></i>
+      <button type="button" class="on" data-m="login">Connexion</button>
+      <button type="button" data-m="reg">Inscription</button>
+    </div>
+    <form id="authForm" autocomplete="on">
+      <label class="field"><span>Nom d'utilisateur</span><input id="fUser" autocomplete="username" maxlength="20" placeholder="ex. roko_42" required></label>
+      <label class="field"><span>Mot de passe</span><input id="fPass" type="password" autocomplete="current-password" minlength="6" placeholder="6 caractères minimum" required></label>
+      <button class="btn" id="authBtn" type="submit">Se connecter</button>
+      <div class="err" id="authErr"></div>
+    </form>
+  </div>
+</section>
+
+<!-- ============ APPLICATION ============ -->
+<div id="app" class="hidden">
+  <header class="top">
+    <div class="mini" id="miniLogo"><span>Pattes</span></div>
+    <nav class="tabs" id="tabs"><i></i>
+      <button type="button" class="on" data-t="msg"><span id="icoMsg"></span>Messages<span class="dot hidden" id="tabDotMsg"></span></button>
+      <button type="button" data-t="pet"><span id="icoPet"></span>Compagnon<span class="dot hidden" id="tabDotPet"></span></button>
+    </nav>
+    <div class="hright">
+      <span class="me" id="meName"></span>
+      <button type="button" class="ibtn bell" id="bellBtn" aria-label="Notifications"><span id="icoBell"></span><span class="dot hidden" id="bellDot"></span></button>
+      <button type="button" class="ibtn" id="outBtn" aria-label="Déconnexion"><span id="icoOut"></span></button>
+    </div>
+    <div id="bellPanel" class="hidden"></div>
+  </header>
+  <main>
+    <section class="view on" id="vMsg">
+      <div class="msgs" id="msgs">
+        <aside class="side">
+          <form class="newchat" id="newForm">
+            <input id="newUser" placeholder="Écrire à un nom d'utilisateur" maxlength="20" autocomplete="off">
+            <button type="submit" aria-label="Nouvelle conversation"><span id="icoPlus"></span></button>
+          </form>
+          <div id="convList"></div>
+        </aside>
+        <section class="chat" id="chat"></section>
+      </div>
+    </section>
+    <section class="view petview" id="vPet"><div class="wrap" id="petRoot"></div></section>
+  </main>
+</div>
+<div id="toasts"></div>
+<div id="modal" class="modal hidden"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+/* =========================================================
+   CONFIG : remplacer par les valeurs du projet Supabase
+   ========================================================= */
+const SUPABASE_URL = 'https://VOTRE-PROJET.supabase.co';
+const SUPABASE_ANON_KEY = 'VOTRE_CLE_ANON';
+
+const $ = (s, r = document) => r.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const EMAIL_DOMAIN = '@pattes.app';
+
+/* ---------- icônes SVG ---------- */
+const I = {
+  chat:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>',
+  paw:'<svg viewBox="0 0 24 24" fill="currentColor"><ellipse cx="12" cy="16" rx="5" ry="4"/><ellipse cx="5.5" cy="11" rx="2" ry="2.8" transform="rotate(-18 5.5 11)"/><ellipse cx="9.5" cy="6.5" rx="2.1" ry="3"/><ellipse cx="14.5" cy="6.5" rx="2.1" ry="3"/><ellipse cx="18.5" cy="11" rx="2" ry="2.8" transform="rotate(18 18.5 11)"/></svg>',
+  bell:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 8-3 9h18c0-1-3-2-3-9z"/><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"/></svg>',
+  out:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5M21 12H9"/></svg>',
+  plus:'<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>',
+  send:'<svg viewBox="0 0 24 24" fill="#fff"><path d="M3.4 20.4 21 12 3.4 3.6l.1 6.5L15 12 3.5 13.9z"/></svg>',
+  back:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>',
+  bowl:'<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11h18a9 9 0 0 1-18 0z"/><path d="M8 7c0-1.5 1-2 1-3.5M12 7c0-1.5 1-2 1-3.5M16 7c0-1.5 1-2 1-3.5"/></svg>',
+  ball:'<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M4 9c5 1 11 1 16 0M4 15c5-1 11-1 16 0"/></svg>',
+  brush:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 4 10 14"/><path d="M9 13c-3 0-5 2-5 4 0 1.5-1 2-1 2 3 1 8 1 9-2 .5-1.5-.5-4-3-4z"/></svg>',
+  heart:'<svg viewBox="0 0 24 24"><path d="M12 21s-7-4.6-9.5-9C.8 8 3 4 6.5 4c2 0 3.7 1.2 5.5 3 1.8-1.8 3.5-3 5.5-3C21 4 23.2 8 21.5 12 19 16.4 12 21 12 21z"/></svg>',
+  close:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>'
+};
+const LOGO = `<svg viewBox="0 0 64 64"><rect width="64" height="64" rx="16" fill="url(#lg)"/><g fill="#fff"><ellipse class="pad" cx="32" cy="42" rx="13" ry="10"/><ellipse class="toe" style="--i:0" cx="16" cy="30" rx="5" ry="7" transform="rotate(-20 16 30)"/><ellipse class="toe" style="--i:1" cx="26" cy="20" rx="5.5" ry="8"/><ellipse class="toe" style="--i:2" cx="38" cy="20" rx="5.5" ry="8"/><ellipse class="toe" style="--i:3" cx="48" cy="30" rx="5" ry="7" transform="rotate(20 48 30)"/></g></svg>`;
+
+/* =========================================================
+   FAVICON À PASTILLE
+   Image créée à la demande (canvas), mise en cache par nombre.
+   0 = logo seul ; 1..99 = pastille rouge ; >99 = "99+".
+   ========================================================= */
+const Fav = (() => {
+  const cache = new Map();            // clé ("0","1".."99","99+") -> dataURL
+  let link = document.getElementById('fav');
+  const rr = (c, x, y, w, h, r) => { c.beginPath(); c.moveTo(x + r, y); c.arcTo(x + w, y, x + w, y + h, r); c.arcTo(x + w, y + h, x, y + h, r); c.arcTo(x, y + h, x, y, r); c.arcTo(x, y, x + w, y, r); c.closePath(); };
+  function logo(c, s) {
+    const g = c.createLinearGradient(0, 0, s, s); g.addColorStop(0, '#7c5cff'); g.addColorStop(1, '#ff7a59');
+    c.fillStyle = g; rr(c, 0, 0, s, s, s * .25); c.fill();
+    c.fillStyle = '#fff'; const k = s / 64;
+    const e = (x, y, rx, ry, rot) => { c.beginPath(); c.ellipse(x * k, y * k, rx * k, ry * k, rot, 0, Math.PI * 2); c.fill(); };
+    e(32, 42, 13, 10, 0); e(16, 30, 5, 7, -.35); e(26, 20, 5.5, 8, 0); e(38, 20, 5.5, 8, 0); e(48, 30, 5, 7, .35);
+  }
+  function make(key) {
+    const cv = document.createElement('canvas'); cv.width = cv.height = 64;
+    const c = cv.getContext('2d');
+    if (key === '0') { logo(c, 64); return cv.toDataURL('image/png'); }
+    logo(c, 52);
+    c.beginPath(); c.arc(45, 45, 18, 0, Math.PI * 2);
+    c.fillStyle = '#ff2d55'; c.fill(); c.lineWidth = 3; c.strokeStyle = '#fff'; c.stroke();
+    c.fillStyle = '#fff'; c.textAlign = 'center'; c.textBaseline = 'middle';
+    c.font = `800 ${key.length > 2 ? 17 : key.length > 1 ? 24 : 28}px system-ui,Arial,sans-serif`;
+    c.fillText(key, 45, 46);
+    return cv.toDataURL('image/png');
+  }
+  function keyOf(n) { return n <= 0 ? '0' : n > 99 ? '99+' : String(n); }
+  function set(n) {
+    const k = keyOf(n);
+    if (!cache.has(k)) cache.set(k, make(k));
+    const nl = link.cloneNode(); nl.type = 'image/png'; nl.href = cache.get(k);
+    link.replaceWith(nl); link = nl;
+    document.title = n > 0 ? `(${n > 99 ? '99+' : n}) Pattes` : 'Pattes';
+    try { if (navigator.setAppBadge) (n > 0 ? navigator.setAppBadge(n) : navigator.clearAppBadge()).catch(() => {}); } catch (e) {}
+  }
+  return { set, cache, keyOf, make };
+})();
+
+/* =========================================================
+   ANIMAL : dessin SVG
+   ========================================================= */
+function shade(hex, a) {
+  const n = parseInt(hex.slice(1), 16), r = n >> 16, g = (n >> 8) & 255, b = n & 255;
+  const f = c => Math.round(a < 0 ? c * (1 + a) : c + (255 - c) * a);
+  return '#' + [f(r), f(g), f(b)].map(x => Math.max(0, Math.min(255, x)).toString(16).padStart(2, '0')).join('');
+}
+function petSVG(o) {
+  const col = o.color, dk = shade(col, -.28), lt = shade(col, .5), md = shade(col, -.1);
+  const sp = o.species, acc = o.accessory || 'aucun', mood = o.mood || 'happy', ink = '#23233a';
+  let tail = '', earsB = '', nose = '', cheeks = '';
+  if (sp === 'chat') {
+    tail = `<path class="tail" d="M140 160 C190 158 196 108 168 96" fill="none" stroke="${col}" stroke-width="13" stroke-linecap="round"/>`;
+    earsB = `<g class="ear"><polygon points="62,66 66,20 100,48" fill="${col}"/><polygon points="70,54 70,34 86,48" fill="#ffb3c1"/></g><g class="ear"><polygon points="138,66 134,20 100,48" fill="${col}"/><polygon points="130,54 130,34 114,48" fill="#ffb3c1"/></g>`;
+    nose = `<polygon points="95,97 105,97 100,103" fill="#ff8fa3"/><path d="M72 100 L48 96 M72 105 L48 108 M128 100 L152 96 M128 105 L152 108" stroke="${ink}" stroke-width="1.6" stroke-linecap="round" opacity=".6" fill="none"/>`;
+  } else if (sp === 'chien') {
+    tail = `<path class="tail" d="M142 152 C166 142 174 122 168 108" fill="none" stroke="${col}" stroke-width="13" stroke-linecap="round"/>`;
+    earsB = `<g class="ear"><ellipse cx="58" cy="82" rx="14" ry="28" transform="rotate(16 58 82)" fill="${dk}"/></g><g class="ear"><ellipse cx="142" cy="82" rx="14" ry="28" transform="rotate(-16 142 82)" fill="${dk}"/></g>`;
+    nose = `<ellipse cx="100" cy="103" rx="22" ry="16" fill="${lt}"/><ellipse cx="100" cy="95" rx="8" ry="5.5" fill="${ink}"/>`;
+  } else if (sp === 'lapin') {
+    tail = `<circle class="tail" cx="148" cy="160" r="13" fill="${lt}"/>`;
+    earsB = `<g class="ear"><ellipse cx="78" cy="28" rx="12" ry="37" fill="${col}"/><ellipse cx="78" cy="31" rx="6" ry="26" fill="#ffb3c1"/></g><g class="ear"><ellipse cx="122" cy="28" rx="12" ry="37" fill="${col}"/><ellipse cx="122" cy="31" rx="6" ry="26" fill="#ffb3c1"/></g>`;
+    nose = `<ellipse cx="100" cy="99" rx="4.5" ry="3.2" fill="#ff8fa3"/><path d="M74 102 L52 100 M74 107 L52 111 M126 102 L148 100 M126 107 L148 111" stroke="${ink}" stroke-width="1.5" stroke-linecap="round" opacity=".45" fill="none"/>`;
+  } else {
+    tail = `<g class="tail"><ellipse cx="166" cy="138" rx="15" ry="32" transform="rotate(32 166 138)" fill="${col}"/><ellipse cx="181" cy="113" rx="9" ry="12" transform="rotate(32 181 113)" fill="#fff"/></g>`;
+    earsB = `<g class="ear"><polygon points="60,68 62,16 100,50" fill="${col}"/><polygon points="68,56 66,32 86,48" fill="${dk}"/></g><g class="ear"><polygon points="140,68 138,16 100,50" fill="${col}"/><polygon points="132,56 134,32 114,48" fill="${dk}"/></g>`;
+    cheeks = `<path d="M60 96 Q80 130 100 126 Q120 130 140 96 Q120 108 100 101 Q80 108 60 96Z" fill="#fff" opacity=".96"/>`;
+    nose = `<ellipse cx="100" cy="99" rx="6" ry="4.5" fill="${ink}"/>`;
+  }
+  const blush = (sp !== 'renard' && mood === 'happy') ? `<ellipse cx="68" cy="102" rx="8" ry="5" fill="#ff8fa3" opacity=".45"/><ellipse cx="132" cy="102" rx="8" ry="5" fill="#ff8fa3" opacity=".45"/>` : '';
+  let eyes;
+  if (mood === 'dead') {
+    eyes = `<path d="M75 77 L89 91 M89 77 L75 91 M111 77 L125 91 M125 77 L111 91" stroke="${ink}" stroke-width="3.2" stroke-linecap="round" fill="none"/>`;
+  } else {
+    eyes = `<g class="eyes"><circle cx="82" cy="84" r="7" fill="${ink}"/><circle cx="118" cy="84" r="7" fill="${ink}"/><circle cx="84.5" cy="81.5" r="2.6" fill="#fff"/><circle cx="120.5" cy="81.5" r="2.6" fill="#fff"/></g>`;
+    if (mood === 'sad' || mood === 'hungry') eyes += `<path d="M72 78 L92 71 M128 78 L108 71" stroke="${ink}" stroke-width="3" stroke-linecap="round" fill="none"/>`;
+  }
+  let mouth;
+  if (mood === 'happy') mouth = `<path d="M88 109 Q100 121 112 109" stroke="${ink}" stroke-width="3" stroke-linecap="round" fill="none"/>` + (sp === 'chien' ? `<path d="M96 115 Q100 128 106 115Z" fill="#ff7b9c"/>` : '');
+  else if (mood === 'hungry') mouth = `<ellipse cx="100" cy="115" rx="6" ry="7" fill="${ink}"/>`;
+  else if (mood === 'sad') mouth = `<path d="M90 118 Q100 107 110 118" stroke="${ink}" stroke-width="3" stroke-linecap="round" fill="none"/>`;
+  else mouth = `<path d="M90 114 L110 114" stroke="${ink}" stroke-width="3" stroke-linecap="round"/>`;
+  let extra = '';
+  if (mood === 'sad') extra = `<path class="tear" d="M70 92 q-5 9 0 12 q5 -3 0 -12z" fill="#7dd3fc"/>`;
+  if (mood === 'hungry') extra = `<path class="tear" d="M142 66 q-5 9 0 12 q5 -3 0 -12z" fill="#7dd3fc"/>`;
+  let top = '', neck = '';
+  if (acc === 'chapeau') top = `<g transform="rotate(-12 100 56)"><polygon points="100,16 74,58 126,58" fill="#7c5cff"/><polygon points="100,16 90,34 110,34" fill="#ffd166"/><polygon points="86,42 114,42 118,50 82,50" fill="#ffd166" opacity=".9"/><circle cx="100" cy="15" r="6" fill="#ff4d6d"/></g>`;
+  if (acc === 'couronne') top = `<g><polygon points="68,56 72,30 86,44 100,22 114,44 128,30 132,56" fill="#ffd166" stroke="#e0a800" stroke-width="2" stroke-linejoin="round"/><circle cx="100" cy="46" r="4" fill="#ff4d6d"/><circle cx="78" cy="50" r="3" fill="#4cc9f0"/><circle cx="122" cy="50" r="3" fill="#4cc9f0"/></g>`;
+  if (acc === 'lunettes') top = `<g fill="rgba(180,220,255,.28)" stroke="${ink}" stroke-width="3"><circle cx="82" cy="84" r="14"/><circle cx="118" cy="84" r="14"/><path d="M96 84 L104 84 M68 82 L60 78 M132 82 L140 78" fill="none" stroke-linecap="round"/></g>`;
+  if (acc === 'noeud') neck = `<g><polygon points="100,130 76,117 76,143" fill="#ff4d6d"/><polygon points="100,130 124,117 124,143" fill="#ff4d6d"/><circle cx="100" cy="130" r="7" fill="#c9184a"/></g>`;
+  const halo = mood === 'dead' ? `<ellipse class="halo" cx="100" cy="30" rx="24" ry="6" fill="none" stroke="#ffd166" stroke-width="4"/>` : '';
+  return `<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+<ellipse class="shadow" cx="100" cy="186" rx="52" ry="8" fill="rgba(0,0,0,.28)"/>
+<g class="bob">${tail}
+<ellipse cx="100" cy="138" rx="46" ry="38" fill="${col}"/><ellipse cx="100" cy="148" rx="27" ry="23" fill="${lt}" opacity=".85"/>
+<ellipse cx="76" cy="173" rx="15" ry="8" fill="${md}"/><ellipse cx="124" cy="173" rx="15" ry="8" fill="${md}"/>
+<g class="head">${earsB}<circle cx="100" cy="88" r="40" fill="${col}"/>${cheeks}${nose}${blush}${eyes}${mouth}${extra}${top}</g>
+${neck}${halo}</g></svg>`;
+}
+
+/* =========================================================
+   ÉTAT + SUPABASE
+   ========================================================= */
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+let me = null, chan = null, tab = 'msg';
+let convs = [], drafts = new Map(), active = null, rendered = new Set(), firstConvRender = true;
+const notifs = new Map();                 // id -> {kind, conv_id, text, created_at}
+let pet = null, petOffset = 0, adopting = false, sel = { species: 'chat', color: '#f4a261', accessory: 'aucun', name: '' };
+const COLORS = ['#f4a261', '#e9c46a', '#b08968', '#9aa5b1', '#f1ede4', '#2f2f3a', '#ff8fab', '#8ecae6', '#a78bfa', '#6ee7b7'];
+const SPECIES = { chat: 'Chat', chien: 'Chien', lapin: 'Lapin', renard: 'Renard' };
+const ACCS = { aucun: 'Aucun', noeud: 'Noeud', chapeau: 'Chapeau', lunettes: 'Lunettes', couronne: 'Couronne' };
+
+function toast(msg) {
+  const t = document.createElement('div'); t.className = 'toast'; t.textContent = msg;
+  $('#toasts').appendChild(t);
+  setTimeout(() => { t.classList.add('out'); setTimeout(() => t.remove(), 320); }, 2600);
+}
+function avColor(name) {
+  let h = 0; for (const c of name) h = (h * 31 + c.charCodeAt(0)) % 360;
+  return `linear-gradient(135deg,hsl(${h} 70% 55%),hsl(${(h + 40) % 360} 75% 45%))`;
+}
+const fmtTime = d => new Date(d).toLocaleTimeString('fr-CA', { hour: '2-digit', minute: '2-digit' });
+const fmtH = h => { h = Math.max(0, h); const d = Math.floor(h / 24), r = Math.floor(h % 24); return d ? `${d} j ${r} h` : `${r} h`; };
+
+/* ---------- ambiance ---------- */
+(function sparks() {
+  const w = $('#sparks');
+  for (let i = 0; i < 34; i++) {
+    const s = document.createElement('i'); s.className = 'spark';
+    s.style.cssText = `left:${Math.random() * 100}%;top:${Math.random() * 100}%;--d:${3 + Math.random() * 5}s;--dl:${-Math.random() * 6}s;width:${2 + Math.random() * 3}px;height:${2 + Math.random() * 3}px`;
+    w.appendChild(s);
+  }
+})();
+$('#bigLogo').innerHTML = LOGO; $('#miniLogo').insertAdjacentHTML('afterbegin', LOGO);
+$('#icoMsg').innerHTML = I.chat; $('#icoPet').innerHTML = I.paw; $('#icoBell').innerHTML = I.bell; $('#icoOut').innerHTML = I.out; $('#icoPlus').innerHTML = I.plus;
+Fav.set(0);
+
+/* =========================================================
+   AUTH
+   ========================================================= */
+let authMode = 'login';
+$('#authTabs').addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return;
+  authMode = b.dataset.m;
+  $('#authTabs').classList.toggle('reg', authMode === 'reg');
+  [...$('#authTabs').querySelectorAll('button')].forEach(x => x.classList.toggle('on', x === b));
+  $('#authBtn').textContent = authMode === 'reg' ? 'Créer mon compte' : 'Se connecter';
+  $('#fPass').autocomplete = authMode === 'reg' ? 'new-password' : 'current-password';
+  $('#authErr').textContent = '';
+});
+function authFail(msg) {
+  $('#authErr').textContent = msg;
+  const c = $('#authCard'); c.classList.remove('shake'); void c.offsetWidth; c.classList.add('shake');
+}
+$('#authForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const u = $('#fUser').value.trim().toLowerCase(), p = $('#fPass').value;
+  $('#authErr').textContent = '';
+  if (!/^[a-z0-9_]{3,20}$/.test(u)) return authFail('Nom : 3 à 20 caractères (a-z, 0-9, _).');
+  if (p.length < 6) return authFail('Mot de passe : 6 caractères minimum.');
+  const btn = $('#authBtn'); btn.disabled = true;
+  try {
+    if (authMode === 'reg') {
+      const { data, error } = await sb.auth.signUp({ email: u + EMAIL_DOMAIN, password: p });
+      if (error) throw error;
+      if (!data.session) throw new Error('Désactive "Confirm email" dans Supabase (Auth > Providers > Email).');
+      const { error: e2 } = await sb.from('pat_profiles').insert({ id: data.user.id, username: u });
+      if (e2) { await sb.auth.signOut(); throw e2; }
+      await enter(data.user);
+    } else {
+      const { data, error } = await sb.auth.signInWithPassword({ email: u + EMAIL_DOMAIN, password: p });
+      if (error) throw error;
+      await enter(data.user);
+    }
+  } catch (err) {
+    const m = String(err.message || err);
+    if (/already|registered|duplicate|unique/i.test(m)) authFail("Ce nom d'utilisateur est déjà pris.");
+    else if (/invalid login|credentials/i.test(m)) authFail('Nom ou mot de passe incorrect.');
+    else authFail(m);
+  } finally { btn.disabled = false; }
+});
+$('#outBtn').addEventListener('click', async () => { await sb.auth.signOut(); });
+
+/* =========================================================
+   ENTRÉE / SORTIE
+   ========================================================= */
+let timers = [];
+async function enter(user) {
+  const { data: prof } = await sb.from('pat_profiles').select('username').eq('id', user.id).maybeSingle();
+  if (!prof) { await sb.auth.signOut(); return authFail('Profil introuvable, réessaie.'); }
+  me = { id: user.id, username: prof.username };
+  $('#meName').textContent = me.username;
+  $('#auth').classList.add('hidden'); $('#app').classList.remove('hidden');
+  firstConvRender = true; notifs.clear(); active = null; rendered.clear(); drafts.clear();
+  renderChatEmpty();
+  setTab('msg', true);
+  await Promise.all([loadConvs(), loadNotifs(), loadPet()]);
+  subscribe();
+  timers.push(setInterval(updateBars, 15000));
+  timers.push(setInterval(() => { loadNotifs(); loadPet(); }, 60000));
+}
+function leave() {
+  timers.forEach(clearInterval); timers = [];
+  if (chan) { sb.removeChannel(chan); chan = null; }
+  me = null; notifs.clear(); convs = []; pet = null; active = null;
+  Fav.set(0);
+  $('#app').classList.add('hidden'); $('#auth').classList.remove('hidden');
+  $('#bellPanel').classList.add('hidden'); $('#fPass').value = '';
+}
+sb.auth.onAuthStateChange(ev => { if (ev === 'SIGNED_OUT' && me) leave(); });
+
+/* =========================================================
+   ONGLETS
+   ========================================================= */
+function setTab(t, silent) {
+  tab = t;
+  $('#tabs').classList.toggle('pet', t === 'pet');
+  [...$('#tabs').querySelectorAll('button')].forEach(b => b.classList.toggle('on', b.dataset.t === t));
+  $('#vMsg').classList.toggle('on', t === 'msg'); $('#vPet').classList.toggle('on', t === 'pet');
+  if (t === 'pet') { renderPet(); markPetSeen(); }
+  if (t === 'msg' && active && !silent) markRead(active.id);
+}
+$('#tabs').addEventListener('click', e => { const b = e.target.closest('button'); if (b) setTab(b.dataset.t); });
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState !== 'visible' || !me) return;
+  if (tab === 'msg' && active) markRead(active.id);
+  if (tab === 'pet') markPetSeen();
+});
+
+/* =========================================================
+   NOTIFICATIONS (temps réel + favicon)
+   ========================================================= */
+function counts() { let m = 0, p = 0; notifs.forEach(v => v.kind === 'message' ? m++ : p++); return { m, p, total: m + p }; }
+function unreadFor(c) { let n = 0; notifs.forEach(v => { if (v.kind === 'message' && v.conv_id === c) n++; }); return n; }
+function setDot(el, n) {
+  const t = n > 99 ? '99+' : String(n);
+  el.classList.toggle('hidden', n <= 0);
+  if (n > 0 && el.textContent !== t) { el.textContent = t; el.classList.remove('pop'); void el.offsetWidth; el.classList.add('pop'); }
+}
+let lastTotal = 0;
+function refreshBadges() {
+  const c = counts();
+  Fav.set(c.total);                                   // favicon + titre
+  setDot($('#tabDotMsg'), c.m); setDot($('#tabDotPet'), c.p); setDot($('#bellDot'), c.total);
+  if (c.total > lastTotal) { const b = $('.bell'); b.classList.remove('ring'); void b.offsetWidth; b.classList.add('ring'); }
+  lastTotal = c.total;
+  renderConvList(); renderBell();
+}
+async function loadNotifs() {
+  const { data } = await sb.from('pat_notifications').select('id,kind,conv_id,text,created_at').eq('seen', false).order('id', { ascending: false }).limit(1000);
+  notifs.clear(); (data || []).forEach(n => notifs.set(n.id, n));
+  refreshBadges();
+}
+function viewing(conv) { return document.visibilityState === 'visible' && tab === 'msg' && active && active.id === conv; }
+function onNotifIns(p) {
+  const n = p.new; notifs.set(n.id, n);
+  if (n.kind === 'message') {
+    loadConvsSoon();
+    if (viewing(n.conv_id)) markRead(n.conv_id); else refreshBadges();
+  } else {
+    if (tab === 'pet' && document.visibilityState === 'visible') markPetSeen(); else refreshBadges();
+    loadPet();
+  }
+}
+function onNotifUpd(p) { if (p.new.seen) { notifs.delete(p.new.id); refreshBadges(); } }
+async function markRead(conv) {
+  let touched = false;
+  notifs.forEach((v, k) => { if (v.kind === 'message' && v.conv_id === conv) { notifs.delete(k); touched = true; } });
+  if (touched) refreshBadges();
+  await sb.rpc('pat_mark_read', { p_conv: conv });
+}
+async function markPetSeen() {
+  let touched = false;
+  notifs.forEach((v, k) => { if (v.kind === 'pet') { notifs.delete(k); touched = true; } });
+  if (touched) refreshBadges();
+  await sb.rpc('pat_mark_pet_seen');
+}
+async function markAll() {
+  notifs.clear(); refreshBadges();
+  await sb.rpc('pat_mark_all_read');
+}
+function renderBell() {
+  const p = $('#bellPanel'); if (p.classList.contains('hidden')) return;
+  const groups = new Map(); const items = [];
+  notifs.forEach(v => {
+    if (v.kind === 'message') { const g = groups.get(v.conv_id) || { n: 0, text: '', id: v.conv_id }; g.n++; if (!g.text) g.text = v.text; groups.set(v.conv_id, g); }
+    else items.push({ pet: true, text: v.text });
+  });
+  const rows = [];
+  groups.forEach(g => {
+    const c = convs.find(x => x.conv_id === g.id); const name = c ? c.username : '...';
+    rows.push(`<button class="nitem" data-c="${g.id}" style="--i:${rows.length}"><span class="av" style="background:${avColor(name)}">${esc(name[0])}</span><span><b>${esc(name)}</b><small>${g.n > 1 ? g.n + ' nouveaux messages' : esc(g.text)}</small></span></button>`);
+  });
+  items.forEach(it => rows.push(`<button class="nitem" data-pet="1" style="--i:${rows.length}"><span class="av" style="background:linear-gradient(135deg,#7c5cff,#ff7a59)"><span style="width:22px">${I.paw}</span></span><span><b>Compagnon</b><small>${esc(it.text)}</small></span></button>`));
+  p.innerHTML = rows.length ? rows.join('') + '<button class="nall" id="nAll">Tout marquer comme vu</button>' : '<div class="nempty">Aucune notification</div>';
+}
+$('#bellBtn').addEventListener('click', e => { e.stopPropagation(); const p = $('#bellPanel'); p.classList.toggle('hidden'); renderBell(); });
+$('#bellPanel').addEventListener('click', e => {
+  e.stopPropagation();
+  if (e.target.closest('#nAll')) return markAll();
+  const it = e.target.closest('.nitem'); if (!it) return;
+  $('#bellPanel').classList.add('hidden');
+  if (it.dataset.pet) setTab('pet');
+  else { const c = convs.find(x => x.conv_id === +it.dataset.c); setTab('msg', true); if (c) openConv(c.conv_id, c.username); }
+});
+document.addEventListener('click', () => $('#bellPanel').classList.add('hidden'));
+
+/* =========================================================
+   MESSAGERIE
+   ========================================================= */
+let convTimer = null;
+function loadConvsSoon() { clearTimeout(convTimer); convTimer = setTimeout(loadConvs, 250); }
+async function loadConvs() {
+  const { data } = await sb.rpc('pat_list_conversations');
+  convs = data || [];
+  convs.forEach(c => drafts.delete(c.conv_id));
+  renderConvList();
+}
+function renderConvList() {
+  const el = $('#convList'); if (!el) return;
+  const all = [...drafts.values(), ...convs];
+  if (!all.length) {
+    el.innerHTML = `<div class="empty"><div>${LOGO}<div>Aucune conversation.<br>Écris à quelqu'un avec son nom d'utilisateur.</div></div></div>`;
+    return;
+  }
+  const anim = firstConvRender ? ' anim' : '';
+  el.innerHTML = all.map((c, i) => {
+    const u = unreadFor(c.conv_id), on = active && active.id === c.conv_id ? ' on' : '';
+    const t = u > 99 ? '99+' : u;
+    return `<button class="conv${on}${anim}" style="--i:${i}" data-c="${c.conv_id}" data-u="${esc(c.username)}"><span class="av" style="background:${avColor(c.username)}">${esc(c.username[0])}</span><span class="cmeta"><b>${esc(c.username)}</b><small>${c.last_body ? esc(c.last_body) : 'Nouvelle conversation'}</small></span>${u > 0 ? `<span class="dot">${t}</span>` : ''}</button>`;
+  }).join('');
+  firstConvRender = false;
+}
+$('#convList').addEventListener('click', e => { const b = e.target.closest('.conv'); if (b) openConv(+b.dataset.c, b.dataset.u); });
+$('#newForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const u = $('#newUser').value.trim().toLowerCase(); if (!u) return;
+  const { data, error } = await sb.rpc('pat_open_conversation', { p_username: u });
+  if (error) {
+    const m = error.message || '';
+    return toast(/introuvable/.test(m) ? 'Utilisateur introuvable.' : /soi_meme/.test(m) ? 'C\'est toi !' : 'Erreur.');
+  }
+  $('#newUser').value = '';
+  if (!convs.some(c => c.conv_id === data)) drafts.set(data, { conv_id: data, username: u, last_body: null });
+  openConv(data, u);
+});
+function renderChatEmpty() {
+  $('#chat').innerHTML = `<div class="empty"><div>${LOGO}<div>Choisis une conversation</div></div></div>`;
+  $('#msgs').classList.remove('chat-open');
+}
+async function openConv(id, username) {
+  active = { id, username }; rendered.clear();
+  $('#msgs').classList.add('chat-open');
+  $('#chat').innerHTML = `
+    <div class="chead"><button class="ibtn back" id="backBtn" aria-label="Retour">${I.back}</button><span class="av" style="background:${avColor(username)}">${esc(username[0])}</span><b>${esc(username)}</b></div>
+    <div id="msgArea"></div>
+    <form class="composer" id="sendForm" autocomplete="off"><input id="msgInput" placeholder="Écris un message" maxlength="2000"><button type="submit" class="send" id="sendBtn" aria-label="Envoyer">${I.send}</button></form>`;
+  $('#backBtn').onclick = () => { active = null; renderChatEmpty(); renderConvList(); };
+  $('#sendForm').addEventListener('submit', sendMsg);
+  renderConvList();
+  const { data } = await sb.from('pat_messages').select('id,sender_id,body,created_at').eq('conv_id', id).order('id', { ascending: false }).limit(100);
+  if (!active || active.id !== id) return;
+  (data || []).reverse().forEach(m => addMsg(m, true));
+  const a = $('#msgArea'); a.style.scrollBehavior = 'auto'; a.scrollTop = a.scrollHeight; a.style.scrollBehavior = '';
+  markRead(id);
+  if (window.innerWidth > 720) $('#msgInput').focus();
+}
+function addMsg(m, quiet) {
+  if (rendered.has(m.id)) return; rendered.add(m.id);
+  const a = $('#msgArea'); if (!a) return;
+  const d = document.createElement('div'); d.className = 'bub ' + (m.sender_id === me.id ? 'mine' : 'theirs');
+  if (quiet) d.style.animation = 'none';
+  d.innerHTML = `${esc(m.body)}<small>${fmtTime(m.created_at)}</small>`;
+  a.appendChild(d);
+  if (!quiet) a.scrollTop = a.scrollHeight;
+}
+async function sendMsg(e) {
+  e.preventDefault();
+  const inp = $('#msgInput'), body = inp.value.trim(); if (!body || !active) return;
+  inp.value = '';
+  const sb2 = $('#sendBtn'); sb2.classList.remove('fly'); void sb2.offsetWidth; sb2.classList.add('fly');
+  const { data, error } = await sb.from('pat_messages').insert({ conv_id: active.id, sender_id: me.id, body }).select('id,sender_id,body,created_at').single();
+  if (error) { inp.value = body; return toast("Message non envoyé."); }
+  addMsg(data); loadConvsSoon();
+}
+function onMsgIns(p) {
+  const m = p.new;
+  if (active && m.conv_id === active.id) addMsg(m);
+  loadConvsSoon();
+}
+
+/* =========================================================
+   REALTIME
+   ========================================================= */
+function subscribe() {
+  if (chan) sb.removeChannel(chan);
+  chan = sb.channel('pat-' + me.id)
+    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'pat_notifications', filter: 'user_id=eq.' + me.id }, onNotifIns)
+    .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'pat_notifications', filter: 'user_id=eq.' + me.id }, onNotifUpd)
+    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'pat_messages' }, onMsgIns)
+    .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'pat_pets', filter: 'owner_id=eq.' + me.id }, () => loadPet())
+    .subscribe();
+}
+
+/* =========================================================
+   COMPAGNON
+   ========================================================= */
+async function loadPet() {
+  const { data, error } = await sb.rpc('pat_status');
+  if (error) return;
+  setPet(data);
+}
+function setPet(p) {
+  pet = p; if (p) petOffset = Date.parse(p.server_now) - Date.now();
+  if (tab === 'pet') renderPet();
+}
+const nowS = () => Date.now() + petOffset;
+function sat() { return pet && pet.alive ? Math.max(0, 100 - (nowS() - Date.parse(pet.fed_at)) / 36e5 * 100 / 48) : 0; }
+function joy() { return pet && pet.alive ? Math.max(0, 100 - (nowS() - Date.parse(pet.played_at)) / 36e5 * 100 / 72) : 0; }
+function moodOf() { if (!pet || !pet.alive) return 'dead'; if (sat() < 35) return 'hungry'; if (joy() < 35) return 'sad'; return 'happy'; }
+const barColor = v => v > 60 ? 'linear-gradient(90deg,#22c55e,#86efac)' : v > 35 ? 'linear-gradient(90deg,#f59e0b,#fde68a)' : 'linear-gradient(90deg,#ef4444,#fda4af)';
+const ageDays = () => Math.floor(((pet.alive ? nowS() : Date.parse(pet.died_at)) - Date.parse(pet.born_at)) / 864e5);
+
+function roomHTML(inner) {
+  const h = new Date().getHours(), night = h < 7 || h >= 20;
+  let stars = ''; if (night) for (let i = 0; i < 26; i++) stars += `<i class="star" style="left:${Math.random() * 100}%;top:${Math.random() * 55}%;animation-delay:${-Math.random() * 3}s"></i>`;
+  return `<div class="room ${night ? 'night' : 'day'}"><i class="sun"></i>${stars}<i class="cloud" style="top:60px;animation-duration:42s"></i><i class="cloud" style="top:130px;animation-duration:64s;animation-delay:-30s;transform:scale(.7)"></i><div class="floor"></div>${inner}<div class="fx" id="fx"></div></div>`;
+}
+function renderPet() {
+  const root = $('#petRoot'); if (!root || !me) return;
+  if (!pet || adopting) return renderWizard(root, false);
+  if (!pet.alive) {
+    root.innerHTML = `<div class="panel grave"><div class="pet dead">${petSVG({ species: pet.species, color: pet.color, accessory: pet.accessory, mood: 'dead' })}</div><h2>${esc(pet.name)} est parti</h2><p>Il a vécu ${ageDays()} jour${ageDays() > 1 ? 's' : ''}. N'oublie pas de nourrir et divertir ton prochain compagnon chaque jour.</p><button class="act" id="reAdopt" style="margin:0 auto;padding:14px 28px">${I.paw}Adopter un nouvel animal</button></div>`;
+    $('#reAdopt').onclick = () => { adopting = true; sel = { species: 'chat', color: '#f4a261', accessory: 'aucun', name: '' }; renderPet(); };
+    return;
+  }
+  const mood = moodOf(), s = sat(), j = joy();
+  root.innerHTML = `<div class="stage">
+    ${roomHTML(`<div class="petwrap pet mood-${mood}" id="petwrap">${petSVG({ species: pet.species, color: pet.color, accessory: pet.accessory, mood })}</div>`)}
+    <div class="panel">
+      <div class="namebar"><h2>${esc(pet.name)}</h2><span class="tag">${esc(pet.tracking)}</span></div>
+      <div class="sub">${SPECIES[pet.species]} · jour ${ageDays() + 1}</div>
+      <div class="need"><div class="row"><span>Satiété</span><small id="sLeft"></small></div><div class="bar" id="sBar"><i></i></div></div>
+      <div class="need"><div class="row"><span>Joie</span><small id="jLeft"></small></div><div class="bar" id="jBar"><i></i></div></div>
+      <div class="actions">
+        <button class="act" id="bFeed">${I.bowl}Nourrir</button>
+        <button class="act" id="bPlay">${I.ball}Jouer</button>
+        <button class="act alt wide" id="bEdit">${I.brush}Personnaliser</button>
+      </div>
+      <div class="hint" id="petHint"></div>
+    </div></div>`;
+  updateBars();
+  $('#bFeed').onclick = doFeed; $('#bPlay').onclick = doPlay; $('#bEdit').onclick = openEdit;
+}
+function updateBars() {
+  if (!pet || !pet.alive) return;
+  if (sat() <= 0 || joy() <= 0) return loadPet();
+  const s = sat(), j = joy(), sb_ = $('#sBar'); if (!sb_) return;
+  const set = (id, v, left, lid) => { const b = $(id); b.classList.toggle('low', v < 35); const i = b.firstElementChild; i.style.width = v.toFixed(1) + '%'; i.style.background = barColor(v); $(lid).textContent = 'tient encore ' + fmtH(left); };
+  set('#sBar', s, s * 48 / 100, '#sLeft'); set('#jBar', j, j * 72 / 100, '#jLeft');
+  const hint = $('#petHint');
+  if (hint) hint.textContent = s < 35 ? `${pet.name} a faim.` : j < 35 ? `${pet.name} s'ennuie.` : `${pet.name} va bien. Pense à le nourrir et à jouer avec lui chaque jour.`;
+  const w = $('#petwrap'); if (w) { const m = moodOf(); w.className = w.className.replace(/mood-\w+/, 'mood-' + m); }
+}
+/* effets */
+function fxHearts(n) {
+  const fx = $('#fx'); if (!fx) return;
+  for (let i = 0; i < n; i++) {
+    const h = document.createElement('div'); h.className = 'heart'; h.innerHTML = I.heart;
+    h.style.left = (38 + Math.random() * 24) + '%'; h.style.setProperty('--r', (Math.random() * 50 - 25) + 'deg'); h.style.animationDelay = (i * .15) + 's';
+    fx.appendChild(h); setTimeout(() => h.remove(), 2400 + i * 150);
+  }
+}
+function fxFood() {
+  const fx = $('#fx'); if (!fx) return;
+  for (let i = 0; i < 9; i++) {
+    const k = document.createElement('div'); k.className = 'kib';
+    k.style.left = (42 + Math.random() * 16) + '%'; k.style.animationDelay = (i * .08) + 's';
+    fx.appendChild(k); setTimeout(() => k.remove(), 1500);
+  }
+}
+function fxBall() { const fx = $('#fx'); if (!fx) return; const b = document.createElement('div'); b.className = 'ball'; fx.appendChild(b); setTimeout(() => b.remove(), 2800); }
+function confetti() {
+  const cols = ['#ff7a59', '#7c5cff', '#ffd166', '#4ade80', '#4cc9f0', '#ff4d6d'];
+  for (let i = 0; i < 70; i++) {
+    const c = document.createElement('i'); c.className = 'conf';
+    c.style.cssText = `left:${Math.random() * 100}%;background:${cols[i % cols.length]};--t:${2 + Math.random() * 2.2}s;--rot:${360 + Math.random() * 720}deg;animation-delay:${Math.random() * .5}s;border-radius:${Math.random() > .5 ? '50%' : '2px'}`;
+    document.body.appendChild(c); setTimeout(() => c.remove(), 5000);
+  }
+}
+function petErr(e) {
+  const m = e.message || '';
+  if (/deja_rassasie/.test(m)) return toast(`${pet.name} n'a plus faim pour l'instant.`);
+  if (/deja_content/.test(m)) return toast(`${pet.name} est déjà bien content.`);
+  if (/pas_d_animal/.test(m)) { loadPet(); return toast('Ton animal est parti.'); }
+  toast('Erreur, réessaie.');
+}
+async function doFeed() {
+  const btns = [$('#bFeed'), $('#bPlay')]; btns.forEach(b => b.disabled = true);
+  const { data, error } = await sb.rpc('pat_feed');
+  if (error) { btns.forEach(b => b.disabled = false); return petErr(error); }
+  fxFood(); await sleep(450);
+  setPet(data); /* re-rendu */
+  const w2 = $('#petwrap'); if (w2) { w2.classList.add('eating'); fxHearts(5); setTimeout(() => w2.classList.remove('eating'), 1800); }
+}
+async function doPlay() {
+  const btns = [$('#bFeed'), $('#bPlay')]; btns.forEach(b => b.disabled = true);
+  const { data, error } = await sb.rpc('pat_play');
+  if (error) { btns.forEach(b => b.disabled = false); return petErr(error); }
+  setPet(data);
+  const w = $('#petwrap'); if (w) { w.classList.add('playing'); fxBall(); fxHearts(7); setTimeout(() => w.classList.remove('playing'), 2600); }
+}
+
+/* ---------- adoption / personnalisation ---------- */
+function wizardHTML(edit) {
+  const sp = Object.keys(SPECIES).map(k => `<button type="button" class="spc${sel.species === k ? ' on' : ''}" data-sp="${k}"><div class="pet">${petSVG({ species: k, color: sel.color, accessory: 'aucun', mood: 'happy' })}</div>${SPECIES[k]}</button>`).join('');
+  const sw = COLORS.map(c => `<button type="button" aria-label="Couleur" data-col="${c}" class="${sel.color === c ? 'on' : ''}" style="background:${c}"></button>`).join('');
+  const ac = Object.keys(ACCS).map(k => `<button type="button" class="chip${sel.accessory === k ? ' on' : ''}" data-acc="${k}">${ACCS[k]}</button>`).join('');
+  return `<div class="wiz">
+    <div class="preview"><div class="pet mood-happy" id="pv">${petSVG({ species: sel.species, color: sel.color, accessory: sel.accessory, mood: 'happy' })}</div></div>
+    <div>
+      ${edit ? '' : `<h3>Espèce</h3><div class="sp">${sp}</div>`}
+      <h3>Couleur</h3><div class="sw">${sw}</div>
+      <h3>Accessoire</h3><div class="chips">${ac}</div>
+      <h3>Nom</h3><label class="field"><input id="petName" maxlength="16" placeholder="Choisis un nom" value="${esc(sel.name)}"></label>
+      <button class="btn" id="wizGo">${edit ? 'Enregistrer' : 'Adopter'}</button>
+      ${edit ? '' : (pet && !pet.alive ? '<button class="btn ghost" id="wizCancel" style="margin-top:10px">Annuler</button>' : '')}
+    </div></div>`;
+}
+function bindWizard(box, edit, done) {
+  const refresh = () => {
+    const nm = $('#petName', box).value; sel.name = nm;
+    const keepFocus = document.activeElement && document.activeElement.id === 'petName';
+    box.innerHTML = wizardHTML(edit); bindWizard(box, edit, done);
+    if (keepFocus) { const i = $('#petName', box); i.focus(); i.setSelectionRange(nm.length, nm.length); }
+  };
+  box.onclick = e => {
+    const s = e.target.closest('[data-sp]'), c = e.target.closest('[data-col]'), a = e.target.closest('[data-acc]');
+    if (s) { sel.species = s.dataset.sp; refresh(); }
+    else if (c) { sel.color = c.dataset.col; refresh(); }
+    else if (a) { sel.accessory = a.dataset.acc; refresh(); }
+  };
+  $('#petName', box).addEventListener('input', e => { sel.name = e.target.value; });
+  const cancel = $('#wizCancel', box); if (cancel) cancel.onclick = () => { adopting = false; renderPet(); };
+  $('#wizGo', box).onclick = async () => {
+    const name = $('#petName', box).value.trim();
+    if (!name) { toast('Donne un nom à ton animal.'); const i = $('#petName', box); i.focus(); return; }
+    $('#wizGo', box).disabled = true;
+    const { data, error } = edit
+      ? await sb.rpc('pat_customize', { p_name: name, p_color: sel.color, p_accessory: sel.accessory })
+      : await sb.rpc('pat_adopt', { p_species: sel.species, p_name: name, p_color: sel.color, p_accessory: sel.accessory });
+    if (error) { $('#wizGo', box).disabled = false; return petErr(error); }
+    adopting = false; done(data);
+  };
+}
+function renderWizard(root, edit) {
+  root.innerHTML = `<div class="panel"><h2 style="font-weight:900;margin-bottom:16px">${pet && !pet.alive ? 'Un nouveau compagnon' : 'Adopte ton compagnon'}</h2><div id="wizBox"></div></div>`;
+  const box = $('#wizBox'); box.innerHTML = wizardHTML(false);
+  bindWizard(box, false, data => { setPet(data); confetti(); setTimeout(() => fxHearts(8), 200); toast(`Bienvenue, ${data.name}.`); });
+}
+function openEdit() {
+  sel = { species: pet.species, color: pet.color, accessory: pet.accessory, name: pet.name };
+  const m = $('#modal'); m.classList.remove('hidden');
+  m.innerHTML = `<div class="mbox"><div class="top2"><h2>Personnaliser ${esc(pet.name)}</h2><button class="ibtn" id="mClose" aria-label="Fermer">${I.close}</button></div><div id="mBox"></div></div>`;
+  const box = $('#mBox'); box.innerHTML = wizardHTML(true);
+  const close = () => { m.classList.add('hidden'); m.innerHTML = ''; };
+  $('#mClose').onclick = close; m.onclick = e => { if (e.target === m) close(); };
+  bindWizard(box, true, data => { close(); setPet(data); fxHearts(5); toast('Enregistré.'); });
+}
+
+/* ---------- démarrage ---------- */
+(async () => {
+  try {
+    const { data: { session } } = await sb.auth.getSession();
+    if (session) await enter(session.user);
+  } catch (e) { /* écran de connexion */ }
+})();
+</script>
+</body>
+</html>
